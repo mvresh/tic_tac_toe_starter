@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -12,47 +13,80 @@ class TicTacToePage extends StatefulWidget {
 }
 
 int boardSize = 3;
-
 List<List<Widget>> BoardOfWidgets = List.generate(boardSize, (_) => List.filled(boardSize,null));
-
 String currentPlayer = 'X';
 
-String secondaryTitle = '$currentPlayer to move';
 
 class _TicTacToePageState extends State<TicTacToePage> {
 
 
-  ReusableCreateText(int i, int j) {
-    bool winnerCheckerIsTrue = false;
-  setState(() {
+  Widget XIcon = Icon(Icons.remove,size: 50,color: Colors.white,);
+  Widget OIcon = Icon(FontAwesomeIcons.circle,size: 50,color: Colors.white,);
+  String title = '$currentPlayer to move ';
 
-    if(BoardOfWidgets[i][j] == null){
-      //BoardOfWidgets[i][j] = XOFiller(i,j);
+  highlightWinningWidgets(List<Widget>widget1,List<Widget>widget2,List<Widget>widget3){
+
+  }
+  checkWinner(List<List<Widget>>board,Widget x){
+    if (board[0][0] == x && board[0][1] == x && board[0][2] == x) {
+
+      return true;
+
+    } else if (board[1][0] == x && board[1][1] == x && board[1][2] == x) {
+      return true;
+    } else if (board[2][0] == x && board[2][1] == x && board[2][2] == x) {
+      return true;
+    } else if (board[0][0] == x && board[1][0] == x && board[2][0] == x) {
+      return true;
+    } else if (board[0][1] == x && board[1][1] == x && board[2][1] == x) {
+      return true;
+    } else if (board[0][2] == x && board[1][2] == x && board[2][2] == x) {
+      return true;
+    } else if (board[0][0] == x && board[1][1] == x && board[2][2] == x) {
+      return true;
+    } else if (board[0][2] == x && board[1][1] == x && board[2][0] == x) {
+      return true;
+    } else {
+      return false;
     }
-    if(BoardOfWidgets[i][0] == BoardOfWidgets[i][1] && BoardOfWidgets[i][1] == BoardOfWidgets[i][2] && BoardOfWidgets[i][1] != null){
-      winnerCheckerIsTrue = true;
+  }
+
+  refreshEverything(int row,int column){
+    print('$currentPlayer');
+    if(currentPlayer == 'X' && BoardOfWidgets[row][column] == null ){
+      BoardOfWidgets[row][column] = AnimatedOpacity(opacity: 1,duration: Duration(seconds: 4),curve: Cubic(0.4, 0.0, 0.2, 1.0),child: XIcon);
     }
-    else if(BoardOfWidgets[0][j] == BoardOfWidgets[1][j] && BoardOfWidgets[1][j] == BoardOfWidgets[2][j] && BoardOfWidgets[1][j] != null){
-      winnerCheckerIsTrue = true;
+    else if(currentPlayer == 'O' && BoardOfWidgets[row][column] == null){
+      BoardOfWidgets[row][column] = AnimatedOpacity(opacity: 1,duration: Duration(seconds: 4),curve: Cubic(0.4, 0.0, 0.2, 1.0),child: OIcon);
     }
-    else if(BoardOfWidgets[0][0] == BoardOfWidgets[1][1] && BoardOfWidgets[1][1] == BoardOfWidgets[2][2] && BoardOfWidgets[1][1] != ' '){
-      winnerCheckerIsTrue = true;
+
+    if (currentPlayer == 'X') {
+      currentPlayer = 'O';
+    } else {
+      currentPlayer = 'X';
     }
-    else if(BoardOfWidgets[0][2] == BoardOfWidgets[1][1] && BoardOfWidgets[1][1] == BoardOfWidgets[2][0] && BoardOfWidgets[1][1] != ' '){
-      winnerCheckerIsTrue = true;
+    title = '$currentPlayer to move';
+
+    if(checkWinner(BoardOfWidgets,XIcon)){
+      title = 'X is the winner';
     }
-    if(winnerCheckerIsTrue){
-      secondaryTitle = '$currentPlayer is the winner!';
+    else if(checkWinner(BoardOfWidgets, OIcon)){
+      title = 'O is the winner';
     }
-    else {
-      secondaryTitle = '$currentPlayer to move';
-    }
-    currentPlayer == 'X'
-    ? currentPlayer = 'O'
-        : currentPlayer = 'X';
+
+    setState(() {
+
     });
   }
 
+  Reset(){
+    BoardOfWidgets = List.generate(boardSize, (_) => List.filled(boardSize,null));
+    currentPlayer = 'X';
+    title = '$currentPlayer to move';
+    setState(() {
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +104,19 @@ class _TicTacToePageState extends State<TicTacToePage> {
               SizedBox(
                 height: 100,
               ),
-              Text('TIC TAC TOE',
+              Center(
+                child: Text('TIC TAC TOE',
+                    style: TextStyle(
+                        fontFamily: 'Varela',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 40,
+                        color: Colors.white)),
+              ),
+              Text(title,
                   style: TextStyle(
                       fontFamily: 'Varela',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 40,
-                      color: Colors.white)),
-              TitleText(secondaryTitle),
+                      fontSize: 20,
+                      color: Colors.white70)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -85,7 +125,7 @@ class _TicTacToePageState extends State<TicTacToePage> {
                       width: 70,
                       height: 70,
                       child: BoardOfWidgets[0][0],
-                      createText: ReusableCreateText(0, 0),
+                      createIcon: () => refreshEverything(0,0),
                     ),
                   ),
                   Expanded(
@@ -93,7 +133,7 @@ class _TicTacToePageState extends State<TicTacToePage> {
                       width: 70,
                       height: 70,
                       child: BoardOfWidgets[0][1],
-                      createText: ReusableCreateText(0, 1),
+                      createIcon:() => refreshEverything(0,1),
                     ),
                   ),
                   Expanded(
@@ -101,7 +141,7 @@ class _TicTacToePageState extends State<TicTacToePage> {
                       width: 70,
                       height: 70,
                       child: BoardOfWidgets[0][2],
-                      createText: ReusableCreateText(0, 2),
+                      createIcon: () => refreshEverything(0,2),
                     ),
                   ),
                 ],
@@ -114,7 +154,7 @@ class _TicTacToePageState extends State<TicTacToePage> {
                       width: 70,
                       height: 70,
                       child: BoardOfWidgets[1][0],
-                      createText: ReusableCreateText(1, 0),
+                      createIcon: () => refreshEverything(1,0),
                     ),
                   ),
                   Expanded(
@@ -122,7 +162,7 @@ class _TicTacToePageState extends State<TicTacToePage> {
                       width: 70,
                       height: 70,
                       child: BoardOfWidgets[1][1],
-                      createText: ReusableCreateText(1, 1),
+                      createIcon:() => refreshEverything(1,1),
                     ),
                   ),
                   Expanded(
@@ -130,7 +170,7 @@ class _TicTacToePageState extends State<TicTacToePage> {
                       width: 70,
                       height: 70,
                       child: BoardOfWidgets[1][2],
-                      createText: ReusableCreateText(1, 2),
+                      createIcon:() => refreshEverything(1,2),
                     ),
                   ),
                 ],
@@ -143,7 +183,7 @@ class _TicTacToePageState extends State<TicTacToePage> {
                       width: 70,
                       height: 70,
                       child: BoardOfWidgets[2][0],
-                      createText: ReusableCreateText(2, 0),
+                      createIcon: () => refreshEverything(2,0),
                     ),
                   ),
                   Expanded(
@@ -151,7 +191,7 @@ class _TicTacToePageState extends State<TicTacToePage> {
                       width: 70,
                       height: 70,
                       child: BoardOfWidgets[2][1],
-                      createText: ReusableCreateText(2, 1),
+                      createIcon: () =>  refreshEverything(2,1),
                     ),
                   ),
                   Expanded(
@@ -159,26 +199,18 @@ class _TicTacToePageState extends State<TicTacToePage> {
                       width: 70,
                       height: 70,
                       child: BoardOfWidgets[2][2],
-                      createText: ReusableCreateText(2, 2),
+                      createIcon: () =>  refreshEverything(2,2),
                     ),
                   ),
                 ],
               ),
-              SizedBox(
-                height: 30,
-              ),
-              ReusableBox(
-                width: 160,
-                height: 60,
-                child: Center(
-                  child: Text('Result',
-                      style: TextStyle(
-                        fontFamily: 'Varela',
-                        fontSize: 24,
-                        color: Color(0xFFFFFFFF),
-                      )),
-                ),
-              ),
+              ReusableBox(width: 140,height: 70,child: Text('RESET',
+                  style: TextStyle(
+                      fontFamily: 'Varela',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.white)),
+              createIcon: () => Reset(),)
             ],
           )
         ],
@@ -187,50 +219,22 @@ class _TicTacToePageState extends State<TicTacToePage> {
   }
 }
 
-class XOFiller extends StatelessWidget {
-int row;
-int column;
-XOFiller(this.row,this.column);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(currentPlayer,
-      style: TextStyle(fontSize: 35, color: Colors.white),
-    );
-  }
-}
-
-class TitleText extends StatelessWidget {
- String title;
- TitleText(this.title);
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(title,
-        style: TextStyle(
-            fontFamily: 'Varela',
-            fontSize: 20,
-            color: Colors.white70));
-  }
-}
-
 class ReusableBox extends StatelessWidget {
   double width;
   double height;
   Widget child;
-  Function createText;
+  Function createIcon;
 
   ReusableBox(
       {this.width,
-      this.height,
-      this.child,
-      this.createText});
+        this.height,
+        this.child,
+        this.createIcon});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: createText,
+      onTap: createIcon,
       child: Container(
         width: width,
         height: height,
